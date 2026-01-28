@@ -1,0 +1,22 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+  background-color: #fafafa;
+  color: #222;
+}
+
+h1 {
+  margin: 16px;
+}
+
+p {
+  margin: 0 16px;
+}
