@@ -9,6 +9,8 @@ export function useRepos() {
   const [error, setError] = useState<GithubApiError | null>(null);
 
   const fetchRepos = useCallback(async (query: string, page: number) => {
+    setRepos([]);
+    setTotalCount(0);
     setLoading(true);
     setError(null);
 
@@ -27,11 +29,19 @@ export function useRepos() {
     }
   }, []);
 
+  const resetRepos = useCallback(() => {
+    setRepos([]);
+    setTotalCount(0);
+    setError(null);
+    setLoading(false);
+  }, []);
+
   return {
     repos,
     totalCount,
     loading,
     error,
     fetchRepos,
+    resetRepos,
   };
 }

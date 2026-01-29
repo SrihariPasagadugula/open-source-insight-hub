@@ -39,7 +39,7 @@ export async function searchRepositories(
 ): Promise<{ items: GithubRepository[]; totalCount: number }> {
   const url = new URL(`${BASE_URL}${SEARCH_REPOS_ENDPOINT}`);
   url.searchParams.set("q", query);
-  url.searchParams.set("page", String(page));
+  url.searchParams.set("page", String(page + 1));
   url.searchParams.set("per_page", String(PER_PAGE));
 
   const response = await fetch(url.toString());
