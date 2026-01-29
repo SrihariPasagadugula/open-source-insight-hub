@@ -17,6 +17,7 @@ export interface GithubRepository {
 
 interface SearchRepositoriesResponse {
   total_count: number;
+  incomplete_results: boolean;
   items: GithubRepository[];
 }
 

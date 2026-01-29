@@ -1,9 +1,26 @@
 import { useState } from "react";
 import { useRepos } from "../../hooks/useRepos";
+import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 
 export function RepoDiscovery() {
   const [query, setQuery] = useState("");
-  const { repos, loading, error, fetchRepos, resetRepos } = useRepos();
+  const [hasSearched, setHasSearched] = useState(false);
+  const {
+    repos,
+    totalCount,
+    loading,
+    error,
+    fetchRepos,
+    loadMore,
+    resetRepos,
+  } = useRepos();
+
+  const hasMore = hasSearched && repos.length < totalCount;
+
+  useInfiniteScroll({
+    hasMore,
+    onLoadMore: () => loadMore(query),
+  });
 
   return (
     <section>
@@ -19,8 +36,10 @@ export function RepoDiscovery() {
       <button
         onClick={() => {
           if (query.trim()) {
+            setHasSearched(true);
             fetchRepos(query, 0);
           } else {
+            setHasSearched(false);
             resetRepos();
           }
         }}
@@ -32,7 +51,11 @@ export function RepoDiscovery() {
 
       {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
 
-      {!loading && !error && repos.length === 0 && (
+      {!loading && !error && !hasSearched && (
+        <p>Enter a search term and click Search to discover repositories.</p>
+      )}
+
+      {!loading && !error && hasSearched && repos.length === 0 && (
         <p>No repositories found.</p>
       )}
 
@@ -44,6 +67,8 @@ export function RepoDiscovery() {
           </li>
         ))}
       </ul>
+
+      <div id="scroll-sentinel" />
     </section>
   );
 }
