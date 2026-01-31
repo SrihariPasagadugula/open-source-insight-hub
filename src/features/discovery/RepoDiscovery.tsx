@@ -3,6 +3,8 @@ import { useRepos } from "../../hooks/useRepos";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { Modal } from "../../components/Modal";
 import { RepoDetails } from "./RepoDetails";
+import type { GithubRepository } from "../../api/githubApi";
+import { RepoComparison } from "./RepoComparison";
 
 export function RepoDiscovery() {
   const [query, setQuery] = useState("");
@@ -11,6 +13,7 @@ export function RepoDiscovery() {
     owner: string;
     name: string;
   } | null>(null);
+  const [compareRepos, setCompareRepos] = useState<GithubRepository[]>([]);
   const {
     repos,
     totalCount,
@@ -27,6 +30,22 @@ export function RepoDiscovery() {
     hasMore,
     onLoadMore: () => loadMore(query),
   });
+
+  function toggleCompare(repo: GithubRepository) {
+    setCompareRepos((prev) => {
+      const exists = prev.find((r) => r.id === repo.id);
+
+      if (exists) {
+        return prev.filter((r) => r.id !== repo.id);
+      }
+
+      if (prev.length === 2) {
+        return [prev[1], repo];
+      }
+
+      return [...prev, repo];
+    });
+  }
 
   return (
     <section className="discovery">
@@ -69,6 +88,27 @@ export function RepoDiscovery() {
         )}
       </div>
 
+      {hasSearched && repos.length > 0 && (
+        <div className="comparison-helper">
+          {compareRepos.length === 0 && (
+            <p>Select up to 2 repositories to compare.</p>
+          )}
+
+          {compareRepos.length === 1 && (
+            <p>1 repository selected. Select one more to compare.</p>
+          )}
+
+          {compareRepos.length === 2 && <p>Comparing 2 repositories.</p>}
+        </div>
+      )}
+
+      <RepoComparison
+        repos={compareRepos}
+        onRemove={(id) =>
+          setCompareRepos((prev) => prev.filter((r) => r.id !== id))
+        }
+      />
+
       <ul className="repo-list">
         {repos.map((repo) => (
           <li
@@ -81,7 +121,15 @@ export function RepoDiscovery() {
               })
             }
           >
-            <strong className="repo-title">{repo.full_name}</strong>
+            <div className="repo-card-header">
+              <input
+                type="checkbox"
+                checked={compareRepos.some((r) => r.id === repo.id)}
+                onChange={() => toggleCompare(repo)}
+                onClick={(e) => e.stopPropagation()}
+              />
+              <strong className="repo-title">{repo.full_name}</strong>
+            </div>
             <p className="repo-description">{repo.description}</p>
           </li>
         ))}
