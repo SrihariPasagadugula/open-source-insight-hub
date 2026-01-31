@@ -87,6 +87,7 @@ p {
 .repo-card {
   padding: 12px 0;
   border-bottom: 1px solid #e5e5e5;
+  cursor: pointer;
 }
 
 .repo-title {
@@ -98,4 +99,30 @@ p {
 .repo-description {
   font-size: 14px;
   color: #555;
+}
+
+/* ---------- Modal ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  max-width: 600px;
+  width: 90%;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  cursor: pointer;
 }

@@ -1,10 +1,16 @@
 import { useState } from "react";
 import { useRepos } from "../../hooks/useRepos";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
+import { Modal } from "../../components/Modal";
+import { RepoDetails } from "./RepoDetails";
 
 export function RepoDiscovery() {
   const [query, setQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [selectedRepo, setSelectedRepo] = useState<{
+    owner: string;
+    name: string;
+  } | null>(null);
   const {
     repos,
     totalCount,
@@ -65,7 +71,16 @@ export function RepoDiscovery() {
 
       <ul className="repo-list">
         {repos.map((repo) => (
-          <li key={repo.id} className="repo-card">
+          <li
+            key={repo.id}
+            className="repo-card"
+            onClick={() =>
+              setSelectedRepo({
+                owner: repo.owner.login,
+                name: repo.name,
+              })
+            }
+          >
             <strong className="repo-title">{repo.full_name}</strong>
             <p className="repo-description">{repo.description}</p>
           </li>
@@ -73,6 +88,12 @@ export function RepoDiscovery() {
       </ul>
 
       <div id="scroll-sentinel" />
+
+      {selectedRepo && (
+        <Modal onClose={() => setSelectedRepo(null)}>
+          <RepoDetails owner={selectedRepo.owner} name={selectedRepo.name} />
+        </Modal>
+      )}
     </section>
   );
 }

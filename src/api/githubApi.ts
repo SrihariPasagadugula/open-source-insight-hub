@@ -15,6 +15,12 @@ export interface GithubRepository {
   };
 }
 
+export interface GithubRepoDetails extends GithubRepository {
+  subscribers_count: number;
+  network_count: number;
+  topics: string[];
+}
+
 interface SearchRepositoriesResponse {
   total_count: number;
   incomplete_results: boolean;
@@ -55,4 +61,20 @@ export async function searchRepositories(
     items: data.items,
     totalCount: data.total_count,
   };
+}
+
+export async function getRepositoryDetails(
+  owner: string,
+  repo: string,
+): Promise<GithubRepoDetails> {
+  const response = await fetch(`${BASE_URL}/repos/${owner}/${repo}`);
+
+  if (!response.ok) {
+    throw new GithubApiError(
+      "Failed to fetch repository details",
+      response.status,
+    );
+  }
+
+  return response.json();
 }
