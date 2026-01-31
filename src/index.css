@@ -20,3 +20,82 @@ h1 {
 p {
   margin: 0 16px;
 }
+
+/* ---------- Layout ---------- */
+
+.page {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px 16px 64px;
+}
+
+.page-title {
+  margin-bottom: 24px;
+  font-size: 24px;
+}
+
+/* ---------- Discovery Section ---------- */
+
+.discovery {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  margin-bottom: 8px;
+}
+
+/* ---------- Search ---------- */
+
+.search-bar {
+  display: flex;
+  gap: 8px;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.search-bar button {
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+/* ---------- Status / Messages ---------- */
+
+.status p {
+  font-size: 14px;
+  color: #555;
+}
+
+.status .error {
+  color: #c0392b;
+}
+
+/* ---------- Repo List ---------- */
+
+.repo-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.repo-card {
+  padding: 12px 0;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.repo-title {
+  display: block;
+  font-size: 15px;
+  margin-bottom: 4px;
+}
+
+.repo-description {
+  font-size: 14px;
+  color: #555;
+}

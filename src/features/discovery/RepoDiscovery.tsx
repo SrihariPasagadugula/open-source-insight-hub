@@ -23,47 +23,51 @@ export function RepoDiscovery() {
   });
 
   return (
-    <section>
-      <h2>Discover Repositories</h2>
+    <section className="discovery">
+      <h2 className="section-title">Discover Repositories</h2>
 
-      <input
-        type="text"
-        placeholder="Search repositories..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-      />
+      <div className="search-bar">
+        <input
+          type="text"
+          placeholder="Search repositories..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
 
-      <button
-        onClick={() => {
-          if (query.trim()) {
-            setHasSearched(true);
-            fetchRepos(query, 0);
-          } else {
-            setHasSearched(false);
-            resetRepos();
-          }
-        }}
-      >
-        Search
-      </button>
+        <button
+          onClick={() => {
+            if (query.trim()) {
+              setHasSearched(true);
+              fetchRepos(query, 0);
+            } else {
+              setHasSearched(false);
+              resetRepos();
+            }
+          }}
+        >
+          Search
+        </button>
+      </div>
 
-      {loading && <p>Loading...</p>}
+      <div className="status">
+        {loading && <p>Loading...</p>}
 
-      {error && <p style={{ color: "red" }}>Error: {error.message}</p>}
+        {error && <p className="error">Error: {error.message}</p>}
 
-      {!loading && !error && !hasSearched && (
-        <p>Enter a search term and click Search to discover repositories.</p>
-      )}
+        {!loading && !error && !hasSearched && (
+          <p>Enter a search term and click Search to discover repositories.</p>
+        )}
 
-      {!loading && !error && hasSearched && repos.length === 0 && (
-        <p>No repositories found.</p>
-      )}
+        {!loading && !error && hasSearched && repos.length === 0 && (
+          <p>No repositories found.</p>
+        )}
+      </div>
 
-      <ul>
+      <ul className="repo-list">
         {repos.map((repo) => (
-          <li key={repo.id}>
-            <strong>{repo.full_name}</strong>
-            <p>{repo.description}</p>
+          <li key={repo.id} className="repo-card">
+            <strong className="repo-title">{repo.full_name}</strong>
+            <p className="repo-description">{repo.description}</p>
           </li>
         ))}
       </ul>

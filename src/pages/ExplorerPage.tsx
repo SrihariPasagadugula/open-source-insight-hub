@@ -2,9 +2,9 @@ import { RepoDiscovery } from "../features/discovery/RepoDiscovery";
 
 export function ExplorerPage() {
   return (
-    <div>
-      <h1>Open-Source Insight Hub</h1>
+    <main className="page">
+      <h1 className="page-title">Open-Source Insight Hub</h1>
       <RepoDiscovery />
-    </div>
+    </main>
   );
 }
