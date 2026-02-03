@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRepos } from "../../hooks/useRepos";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { Modal } from "../../components/Modal";
@@ -14,6 +14,10 @@ export function RepoDiscovery() {
     name: string;
   } | null>(null);
   const [compareRepos, setCompareRepos] = useState<GithubRepository[]>([]);
+  const [sortBy, setSortBy] = useState<"none" | "stars" | "forks" | "updated">(
+    "none",
+  );
+  const [languageFilter, setLanguageFilter] = useState<string>("all");
   const {
     repos,
     totalCount,
@@ -24,10 +28,12 @@ export function RepoDiscovery() {
     resetRepos,
   } = useRepos();
 
-  const hasMore = hasSearched && repos.length < totalCount;
+  const isRefinementMode = sortBy !== "none" || languageFilter !== "all";
+  const hasMore = hasSearched && !isRefinementMode && repos.length < totalCount;
 
   useInfiniteScroll({
     hasMore,
+    loading,
     onLoadMore: () => loadMore(query),
   });
 
@@ -46,6 +52,47 @@ export function RepoDiscovery() {
       return [...prev, repo];
     });
   }
+
+  const availableLanguages = useMemo(() => {
+    const set = new Set<string>();
+
+    repos.forEach((repo) => {
+      if (repo.language) {
+        set.add(repo.language);
+      }
+    });
+
+    return Array.from(set).sort();
+  }, [repos]);
+
+  const visibleRepos = useMemo(() => {
+    if (!isRefinementMode) {
+      return repos;
+    }
+
+    let result = [...repos];
+
+    if (languageFilter !== "all") {
+      result = result.filter((repo) => repo.language === languageFilter);
+    }
+
+    result.sort((a, b) => {
+      switch (sortBy) {
+        case "forks":
+          return b.forks_count - a.forks_count;
+        case "updated":
+          return (
+            new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime()
+          );
+        case "stars":
+          return b.stargazers_count - a.stargazers_count;
+        default:
+          return 0;
+      }
+    });
+
+    return result;
+  }, [repos, sortBy, languageFilter, isRefinementMode]);
 
   return (
     <section className="discovery">
@@ -109,8 +156,57 @@ export function RepoDiscovery() {
         }
       />
 
+      {repos.length > 0 && (
+        <div className="controls">
+          <div>
+            <label>
+              Sort by
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              >
+                <option value="none">None (Discovery mode)</option>
+                <option value="stars">Stars</option>
+                <option value="forks">Forks</option>
+                <option value="updated">Recently Updated</option>
+              </select>
+            </label>
+          </div>
+          <div>
+            <label>
+              Language
+              <select
+                value={languageFilter}
+                onChange={(e) => setLanguageFilter(e.target.value)}
+              >
+                <option value="all">All</option>
+                {availableLanguages.map((lang) => (
+                  <option key={lang} value={lang}>
+                    {lang}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
+      )}
+
+      {isRefinementMode && (
+        <div className="refinement-indicator">
+          <p>Showing refined results. Infinite scrolling is disabled.</p>
+          <button
+            onClick={() => {
+              setSortBy("none");
+              setLanguageFilter("all");
+            }}
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
+
       <ul className="repo-list">
-        {repos.map((repo) => (
+        {visibleRepos.map((repo) => (
           <li
             key={repo.id}
             className="repo-card"

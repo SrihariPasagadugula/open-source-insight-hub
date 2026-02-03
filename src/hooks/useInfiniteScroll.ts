@@ -2,11 +2,13 @@ import { useEffect } from "react";
 
 interface UseInfiniteScrollProps {
   hasMore: boolean;
+  loading: boolean;
   onLoadMore: () => void;
 }
 
 export function useInfiniteScroll({
   hasMore,
+  loading,
   onLoadMore,
 }: UseInfiniteScrollProps) {
   useEffect(() => {
@@ -14,7 +16,7 @@ export function useInfiniteScroll({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !loading) {
           onLoadMore();
         }
       },
@@ -31,5 +33,5 @@ export function useInfiniteScroll({
     return () => {
       observer.disconnect();
     };
-  }, [hasMore, onLoadMore]);
+  }, [hasMore, loading, onLoadMore]);
 }

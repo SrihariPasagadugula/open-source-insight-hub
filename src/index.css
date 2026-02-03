@@ -159,3 +159,29 @@ p {
   border: 1px solid #e0e0e0;
   font-size: 14px;
 }
+
+/* ---------- Filter & Sort ---------- */
+
+.controls {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+
+.controls select {
+  margin-left: 4px;
+}
+
+.refinement-indicator {
+  margin: 16px 0;
+  padding: 12px;
+  border: 1px solid #ddd;
+  background: #f9f9f9;
+  font-size: 14px;
+}
+
+.refinement-indicator button {
+  margin-top: 8px;
+  cursor: pointer;
+}
