@@ -1,23 +1,28 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRepos } from "../../hooks/useRepos";
 import { useInfiniteScroll } from "../../hooks/useInfiniteScroll";
 import { Modal } from "../../components/Modal";
 import { RepoDetails } from "./RepoDetails";
 import type { GithubRepository } from "../../api/githubApi";
 import { RepoComparison } from "./RepoComparison";
+import { getParam } from "../../utils/urlState";
+import { isValidSort, type SortBy } from "../../utils/searchState";
 
 export function RepoDiscovery() {
   const [query, setQuery] = useState("");
-  const [hasSearched, setHasSearched] = useState(false);
+  const [searchedQuery, setSearchedQuery] = useState(() => getParam("q") ?? "");
+  const [sortBy, setSortBy] = useState<SortBy>(() => {
+    const param = getParam("sort");
+    return isValidSort(param) ? param : "none";
+  });
+  const [languageFilter, setLanguageFilter] = useState(
+    () => getParam("lang") ?? "all",
+  );
   const [selectedRepo, setSelectedRepo] = useState<{
     owner: string;
     name: string;
   } | null>(null);
   const [compareRepos, setCompareRepos] = useState<GithubRepository[]>([]);
-  const [sortBy, setSortBy] = useState<"none" | "stars" | "forks" | "updated">(
-    "none",
-  );
-  const [languageFilter, setLanguageFilter] = useState<string>("all");
   const {
     repos,
     totalCount,
@@ -28,13 +33,38 @@ export function RepoDiscovery() {
     resetRepos,
   } = useRepos();
 
+  useEffect(() => {
+    if (searchedQuery.trim()) {
+      setQuery(searchedQuery);
+      fetchRepos(searchedQuery, 0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setCompareRepos([]);
+    const params = new URLSearchParams();
+
+    if (searchedQuery) params.set("q", searchedQuery);
+    if (sortBy !== "none") params.set("sort", sortBy);
+    if (languageFilter !== "all") params.set("lang", languageFilter);
+
+    const queryString = params.toString();
+    const newUrl = queryString
+      ? `${window.location.pathname}?${queryString}`
+      : window.location.pathname;
+
+    window.history.replaceState(null, "", newUrl);
+  }, [searchedQuery, sortBy, languageFilter]);
+
   const isRefinementMode = sortBy !== "none" || languageFilter !== "all";
+  const hasSearched = searchedQuery.trim().length > 0;
   const hasMore = hasSearched && !isRefinementMode && repos.length < totalCount;
 
   useInfiniteScroll({
     hasMore,
     loading,
-    onLoadMore: () => loadMore(query),
+    onLoadMore: () => loadMore(searchedQuery),
   });
 
   function toggleCompare(repo: GithubRepository) {
@@ -109,10 +139,10 @@ export function RepoDiscovery() {
         <button
           onClick={() => {
             if (query.trim()) {
-              setHasSearched(true);
+              setSearchedQuery(query);
               fetchRepos(query, 0);
             } else {
-              setHasSearched(false);
+              setSearchedQuery("");
               resetRepos();
             }
           }}
