@@ -85,9 +85,21 @@ p {
 }
 
 .repo-card {
-  padding: 12px 0;
-  border-bottom: 1px solid #e5e5e5;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  background: white;
   cursor: pointer;
+}
+
+.repo-card:hover {
+  background: #f9fafb;
+}
+
+.repo-card-header {
+  display: flex;
+  gap: 8px;
+  align-items: center;
 }
 
 .repo-title {
@@ -184,4 +196,60 @@ p {
 .refinement-indicator button {
   margin-top: 8px;
   cursor: pointer;
+}
+
+/* ---------- Repo Card Skeleton ---------- */
+
+.skeleton {
+  pointer-events: none;
+}
+
+.skeleton-checkbox {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  background: #e5e7eb;
+}
+
+.skeleton-title {
+  width: 220px;
+  height: 14px;
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+.skeleton-title.large {
+  width: 60%;
+  height: 20px;
+}
+
+.skeleton-line {
+  height: 12px;
+  background: #e5e7eb;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.skeleton-line.short {
+  width: 60%;
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.4),
+    transparent
+  );
+  transform: translateX(-100%);
+  animation: shimmer 1.4s infinite;
 }

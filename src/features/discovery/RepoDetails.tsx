@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getRepositoryDetails, GithubApiError } from "../../api/githubApi";
 import type { GithubRepoDetails } from "../../api/githubApi";
+import { RepoDetailsSkeleton } from "../../components/RepoDetailsSkeleton";
 
 interface RepoDetailsProps {
   owner: string;
@@ -38,7 +39,7 @@ export function RepoDetails({ owner, name }: RepoDetailsProps) {
     };
   }, [owner, name]);
 
-  if (loading) return <p>Loading details...</p>;
+  if (loading) return <RepoDetailsSkeleton />;
   if (error) return <p>Error: {error.message}</p>;
   if (!repo) return null;
 

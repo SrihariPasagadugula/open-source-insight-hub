@@ -7,6 +7,7 @@ import type { GithubRepository } from "../../api/githubApi";
 import { RepoComparison } from "./RepoComparison";
 import { getParam } from "../../utils/urlState";
 import { isValidSort, type SortBy } from "../../utils/searchState";
+import { RepoCardSkeleton } from "../../components/RepoCardSkeleton";
 
 export function RepoDiscovery() {
   const [query, setQuery] = useState("");
@@ -152,7 +153,13 @@ export function RepoDiscovery() {
       </div>
 
       <div className="status">
-        {loading && <p>Loading...</p>}
+        {loading && (
+          <ul className="repo-list">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <RepoCardSkeleton key={i} />
+            ))}
+          </ul>
+        )}
 
         {error && <p className="error">Error: {error.message}</p>}
 
