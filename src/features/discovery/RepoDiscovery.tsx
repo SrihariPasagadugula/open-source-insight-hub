@@ -60,7 +60,12 @@ export function RepoDiscovery() {
 
   const isRefinementMode = sortBy !== "none" || languageFilter !== "all";
   const hasSearched = searchedQuery.trim().length > 0;
-  const hasMore = hasSearched && !isRefinementMode && repos.length < totalCount;
+  const isRateLimited = error?.status === 403;
+  const hasMore =
+    hasSearched &&
+    !isRefinementMode &&
+    !isRateLimited &&
+    repos.length < totalCount;
 
   useInfiniteScroll({
     hasMore,
@@ -125,6 +130,16 @@ export function RepoDiscovery() {
     return result;
   }, [repos, sortBy, languageFilter, isRefinementMode]);
 
+  function handleSearch() {
+    if (query.trim()) {
+      setSearchedQuery(query);
+      fetchRepos(query, 0);
+    } else {
+      setSearchedQuery("");
+      resetRepos();
+    }
+  }
+
   return (
     <section className="discovery">
       <h2 className="section-title">Discover Repositories</h2>
@@ -135,21 +150,14 @@ export function RepoDiscovery() {
           placeholder="Search repositories..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-        />
-
-        <button
-          onClick={() => {
-            if (query.trim()) {
-              setSearchedQuery(query);
-              fetchRepos(query, 0);
-            } else {
-              setSearchedQuery("");
-              resetRepos();
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              handleSearch();
             }
           }}
-        >
-          Search
-        </button>
+        />
+
+        <button onClick={handleSearch}>Search</button>
       </div>
 
       <div className="status">

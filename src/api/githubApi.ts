@@ -53,6 +53,13 @@ export async function searchRepositories(
   const response = await fetch(url.toString(), { signal });
 
   if (!response.ok) {
+    if (response.status === 403) {
+      throw new GithubApiError(
+        "GitHub API rate limit exceeded. Please try again later.",
+        403,
+      );
+    }
+
     throw new GithubApiError("Failed to fetch repositories", response.status);
   }
 
