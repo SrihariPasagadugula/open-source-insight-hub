@@ -44,15 +44,23 @@ export function RepoDetails({ owner, name }: RepoDetailsProps) {
   if (!repo) return null;
 
   return (
-    <div>
-      <h3>{repo.full_name}</h3>
-      <p>{repo.description}</p>
+    <div className="repo-details">
+      <h3 className="repo-details-title">{repo.full_name}</h3>
+      <p className="repo-details-description">{repo.description}</p>
 
-      <ul>
-        <li>⭐ Stars: {repo.stargazers_count}</li>
-        <li>🍴 Forks: {repo.forks_count}</li>
-        <li>🐞 Open issues: {repo.open_issues_count}</li>
-        <li>👀 Subscribers: {repo.subscribers_count}</li>
+      <ul className="repo-stats">
+        <li>
+          ⭐ Stars <strong>{repo.stargazers_count}</strong>
+        </li>
+        <li>
+          🍴 Forks <strong>{repo.forks_count}</strong>
+        </li>
+        <li>
+          🐞 Open Issues <strong>{repo.open_issues_count}</strong>
+        </li>
+        <li>
+          👀 Subscribers <strong>{repo.subscribers_count}</strong>
+        </li>
       </ul>
     </div>
   );

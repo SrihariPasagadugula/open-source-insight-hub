@@ -43,13 +43,14 @@ export class GithubApiError extends Error {
 export async function searchRepositories(
   query: string,
   page: number,
+  signal?: AbortSignal,
 ): Promise<{ items: GithubRepository[]; totalCount: number }> {
   const url = new URL(`${BASE_URL}${SEARCH_REPOS_ENDPOINT}`);
   url.searchParams.set("q", query);
   url.searchParams.set("page", String(page + 1));
   url.searchParams.set("per_page", String(PER_PAGE));
 
-  const response = await fetch(url.toString());
+  const response = await fetch(url.toString(), { signal });
 
   if (!response.ok) {
     throw new GithubApiError("Failed to fetch repositories", response.status);
